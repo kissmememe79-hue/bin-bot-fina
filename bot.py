@@ -2,7 +2,9 @@ import os
 import httpx
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
+import asyncio
 
+# 获取环境变量 TOKEN
 TOKEN = os.getenv("TOKEN")
 if not TOKEN:
     raise RuntimeError("TOKEN 未设置")
@@ -30,7 +32,6 @@ async def query_bin(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 if r.status_code != 200:
                     continue
                 d = r.json()
-
                 results.append(
                     f"〔🌱〕 BIN ➤ {b}\n"
                     f"〔💳〕 Card Brand ➤ {d.get('scheme','未知').upper()}（卡组织）\n"
@@ -47,11 +48,11 @@ async def query_bin(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("未查询到有效 BIN")
 
-def main():
+async def run_bot():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, query_bin))
-    app.run_polling()
+    await app.run_polling(drop_pending_updates=True)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(run_bot())
