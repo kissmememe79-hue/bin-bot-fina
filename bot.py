@@ -79,5 +79,4 @@ async def run_bot():
     await app.run_polling(drop_pending_updates=True)
 # 运行
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(run_bot()) # 直接使用 asyncio.run() 来启动机器人
