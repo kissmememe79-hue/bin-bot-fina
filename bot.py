@@ -62,8 +62,8 @@ async def query_bin(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     f"〔🏦〕 发行银行 ➤ {d.get('bank', {}).get('name', '未知')}（银行）\n"
                     f"〔🌍〕 国家 ➤ {d.get('country', {}).get('name', '未知')}（国家）\n"
                 )
-            except:
-                continue
+            except Exception as e:
+                print(f"查询BIN {b} 时发生错误: {e}") # 打印错误信息
 
     # 返回查询结果
     if results:
@@ -77,6 +77,8 @@ async def run_bot():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, query_bin))
     await app.run_polling(drop_pending_updates=True)
-
+# 运行
 if __name__ == "__main__":
-    asyncio.run(run_bot())
+    import asyncio
+    asyncio.ensure_future(run_bot()) #启动 bot
+    asyncio.get_event_loop().run_forever() # 保持时间循环
