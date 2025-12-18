@@ -80,5 +80,4 @@ async def run_bot():
 # 运行
 if __name__ == "__main__":
     import asyncio
-    asyncio.ensure_future(run_bot()) #启动 bot
-    asyncio.get_event_loop().run_forever() # 保持时间循环
+    asyncio.run(run_bot()) # 直接使用 asyncio.run() 来启动机器人
