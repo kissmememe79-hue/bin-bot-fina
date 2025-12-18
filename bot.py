@@ -1,13 +1,15 @@
 import os
 import httpx
+import asyncio
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
-import asyncio
 
 # 获取环境变量 TOKEN
 TOKEN = os.getenv("TOKEN")
 if not TOKEN:
     raise RuntimeError("TOKEN 未设置")
+else:
+    print("TOKEN 已成功获取")
 
 BIN_API = "https://lookup.binlist.net/{}"
 
