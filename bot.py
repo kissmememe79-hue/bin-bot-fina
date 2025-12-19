@@ -71,16 +71,18 @@ async def query_bin(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("未查询到有效 BIN")
 
-# 启动机器人
-async def run_bot():
+# 定义main函数，启动机器人
+async def main():
     app = ApplicationBuilder().token(TOKEN).build()
+    
+    # 添加命令处理器
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, query_bin))
 
-    # 直接通过 await 运行,不使用 asyuncio.run()
+    # 启动机器人, 进行轮询
     await app.run_polling(drop_pending_updates=True)
-# 运行
+    
 if __name__ == "__main__":
-    # 通过 get_event_loop().run_until_complete() 来运行异步任务
-    asyncio.get_event_loop().run_until_complete(run_bot())
+    import asyncio
+    asyncio.run(main())
     
