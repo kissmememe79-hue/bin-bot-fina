@@ -76,8 +76,11 @@ async def run_bot():
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, query_bin))
+
+    # 使用 awit 来运行
     await app.run_polling(drop_pending_updates=True)
 # 运行
 if __name__ == "__main__":
-    asyncio.run(run_bot()) # 使用 asyncio.run 来启动异步函数
+    # 直接启动事件循环,并调用 bot
+    asyncio.get_event_loop().run_until_complete(run_bot())
     
