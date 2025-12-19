@@ -80,6 +80,6 @@ async def run_bot():
 # 运行
 if __name__ == "__main__":
     # 直接用 run_bot(),不需要 asyncio.run()
-    impoet asyncio
+    import asyncio
     asyncio.get_event_loop().run_until_complete(run_bot())  
     
