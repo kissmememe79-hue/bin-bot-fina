@@ -77,10 +77,10 @@ async def run_bot():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, query_bin))
 
-    # 使用 awit 来运行
+    # 直接通过 await 运行,不使用 asyuncio.run()
     await app.run_polling(drop_pending_updates=True)
 # 运行
 if __name__ == "__main__":
-    # 直接启动事件循环,并调用 bot
+    # 通过 get_event_loop().run_until_complete() 来运行异步任务
     asyncio.get_event_loop().run_until_complete(run_bot())
     
