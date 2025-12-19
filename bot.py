@@ -79,9 +79,7 @@ async def run_bot():
     await app.run_polling(drop_pending_updates=True)
 # 运行
 if __name__ == "__main__":
-    # 删除 asyncio.run(run_bot()) 这一行，直接使用事件循环
-    try:
-        asyncio.get_event_loop().run_until_complete(run_bot())  # 在现有事件循环中运行
-    except RuntimeError:
-        # 如果事件循环已经在运行，使用 asyncio.run()
-        asyncio.run(run_bot())
+    # 直接用 run_bot(),不需要 asyncio.run()
+    impoet asyncio
+    asyncio.get_event_loop().run_until_complete(run_bot())  
+    
