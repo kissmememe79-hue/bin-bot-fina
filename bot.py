@@ -79,7 +79,5 @@ async def run_bot():
     await app.run_polling(drop_pending_updates=True)
 # 运行
 if __name__ == "__main__":
-    # 直接用 run_bot(),不需要 asyncio.run()
-    import asyncio
-    asyncio.get_event_loop().run_until_complete(run_bot())  
+    asyncio.run(run_bot()) # 使用 asyncio.run 来启动异步函数
     
