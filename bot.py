@@ -2,8 +2,10 @@ import requests
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 import os
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
-BOT_TOKEN = os.getenv("8346855772:AAEJ6is0qG8CRNm0H--7EGe16pFz-VxRuXk")
+if not BOT_TOKEN:
+    raise RuntimeError("BOT_TOKEN is missing or empty")
 
 def query_bin(bin_number: str):
     url = f"https://lookup.binlist.net/{bin_number}"
