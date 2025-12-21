@@ -1,7 +1,5 @@
 FROM python:3.11-slim
 
-ENV BOT_TOKEN=${BOT_TOKEN}
-
 WORKDIR /app
 
 COPY requirements.txt .
