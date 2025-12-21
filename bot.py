@@ -3,7 +3,7 @@ from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, ContextTypes, filters
 import os
 
-BOT_TOKEN = os.getenv("8346855772:AAE9KiNbgn70dclW_m-fBAlEEqtra4zqSxE")
+BOT_TOKEN = os.getenv("8346855772:AAEJ6is0qG8CRNm0H--7EGe16pFz-VxRuXk")
 
 def query_bin(bin_number: str):
     url = f"https://lookup.binlist.net/{bin_number}"
