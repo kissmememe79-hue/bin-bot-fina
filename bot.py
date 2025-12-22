@@ -57,7 +57,9 @@ def query_bin(bin_code: str) -> str:
         level = CARD_LEVEL_MAP.get(level_raw, level_raw or "未知")
 
         bank = data.get("bank", {}).get("name", "未知")
-        country = data.get("country", {}).get("name", "未知")
+        
+        country_raw = data.get("country", {}).get("name", "")
+        country = COUNTRY_MAP.get(country_raw, country_raw or "未知")
         emoji = data.get("country", {}).get("emoji", "")
 
         return (
