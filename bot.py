@@ -9,12 +9,21 @@ from telegram.ext import (
     filters,
 )
 
-# ===== 必须的环境变量 =====
+# ========= 环境变量 =========
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 if not BOT_TOKEN:
     raise RuntimeError("BOT_TOKEN is missing or empty")
 
-# ===== 中文映射 =====
+# ========= 中文映射 =========
+CARD_BRAND_MAP = {
+    "visa": "维萨",
+    "mastercard": "万事达",
+    "amex": "美国运通",
+    "discover": "发现卡",
+    "jcb": "JCB",
+    "unionpay": "银联",
+}
+
 CARD_TYPE_MAP = {
     "credit": "信用卡",
     "debit": "借记卡",
@@ -22,8 +31,7 @@ CARD_TYPE_MAP = {
 }
 
 CARD_LEVEL_MAP = {
-    "classic": "普通卡",
-    "standard": "标准卡",
+    "classic": "普卡",
     "gold": "金卡",
     "platinum": "白金卡",
     "world": "世界卡",
@@ -31,72 +39,68 @@ CARD_LEVEL_MAP = {
     "infinite": "无限卡",
 }
 
-CARD_BRAND_MAP = {
-    "visa": "VISA",
-    "mastercard": "万事达",
-    "amex": "美国运通",
-    "discover": "Discover",
-    "jcb": "JCB",
-    "unionpay": "银联",
-}
-
-# ===== BIN 查询 =====
-def query_bin(bin_code: str) -> dict:
-    url = f"https://lookup.binlist.net/{bin_code}"
-    r = requests.get(url, timeout=10)
-    r.raise_for_status()
-    return r.json()
-
-# ===== /start =====
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "👋 欢迎使用 BIN 查询机器人\n\n"
-        "📌 使用方法：\n"
-        "直接发送 6 位 BIN，例如：\n"
-        "519311\n\n"
-        "📊 将自动返回卡片信息（中文）"
-    )
-
-# ===== 处理 BIN =====
-async def handle_bin(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text.strip()
-
-    if not text.isdigit() or len(text) != 6:
-        await update.message.reply_text("❌ 请输入正确的 6 位 BIN")
-        return
-
+# ========= 查询 BIN =========
+def query_bin(bin_code: str) -> str:
     try:
-        data = query_bin(text)
+        r = requests.get(f"https://lookup.binlist.net/{bin_code}", timeout=10)
+        if r.status_code != 200:
+            return f"❌ BIN {bin_code} 查询失败"
 
-        brand_en = data.get("scheme", "")
-        type_en = data.get("type", "")
-        level_en = data.get("brand", "")
+        data = r.json()
+
+        brand_raw = (data.get("scheme") or "").lower()
+        type_raw = (data.get("type") or "").lower()
+        level_raw = (data.get("brand") or "").lower()
+
+        brand = CARD_BRAND_MAP.get(brand_raw, brand_raw or "未知")
+        card_type = CARD_TYPE_MAP.get(type_raw, type_raw or "未知")
+        level = CARD_LEVEL_MAP.get(level_raw, level_raw or "未知")
 
         bank = data.get("bank", {}).get("name", "未知")
         country = data.get("country", {}).get("name", "未知")
         emoji = data.get("country", {}).get("emoji", "")
 
-        msg = (
-            f"〔🌱〕 BIN ➤ {text}\n"
-            f"〔💳〕 Card Brand ➤ {CARD_BRAND_MAP.get(brand_en, brand_en)}\n"
-            f"〔💰〕 Card Type ➤ {CARD_TYPE_MAP.get(type_en, type_en)}\n"
-            f"〔🏆〕 Card Level ➤ {CARD_LEVEL_MAP.get(level_en.lower(), level_en)}\n"
+        return (
+            f"〔🌱〕 BIN ➤ {bin_code}\n"
+            f"〔💳〕 Card Brand ➤ {brand}\n"
+            f"〔💰〕 Card Type ➤ {card_type}\n"
+            f"〔🏆〕 Card Level ➤ {level}\n"
             f"〔🏦〕 Bank Name ➤ {bank}\n"
             f"〔🌍〕 Country ➤ {country} {emoji}"
         )
 
-        await update.message.reply_text(msg)
-
     except Exception as e:
-        await update.message.reply_text(f"❌ 查询失败：{e}")
+        return f"❌ BIN {bin_code} 查询异常：{e}"
 
-# ===== 启动 =====
+# ========= /start =========
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "👋 欢迎使用 BIN 查询机器人\n\n"
+        "📌 使用方法：\n"
+        "• 直接发送 6 位 BIN\n"
+        "• 支持一次发送多个（空格或换行分隔）\n\n"
+        "示例：\n"
+        "519311\n"
+        "457173 406173"
+    )
+
+# ========= 处理消息 =========
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text.strip()
+    bins = [x for x in text.replace("\n", " ").split(" ") if x.isdigit() and len(x) == 6]
+
+    if not bins:
+        await update.message.reply_text("❌ 请输入 6 位 BIN 号码")
+        return
+
+    results = [query_bin(b) for b in bins]
+    await update.message.reply_text("\n\n".join(results))
+
+# ========= 主入口 =========
 def main():
     app = ApplicationBuilder().token(BOT_TOKEN).build()
-
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_bin))
-
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.run_polling()
 
 if __name__ == "__main__":
