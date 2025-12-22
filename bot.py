@@ -72,10 +72,30 @@ COUNTRY_MAP = {
 # ========= 规范化函数 =========
 def normalize_level(raw: str) -> str:
     raw = (raw or "").lower()
-    for k, v in CARD_LEVEL_MAP.items():
-        if k in raw:
-            return v
-    return raw or "未知"
+
+    if "debit" in raw:
+        return "借记卡"
+    if "credit" in raw:
+        return "信用卡"
+    if "enhanced" in raw:
+        return "增强卡"
+    if "classic" in raw:
+        return "普卡"
+    if "standard" in raw:
+        return "标准卡"
+    if "gold" in raw:
+        return "金卡"
+    if "platinum" in raw:
+        return "白金卡"
+    if "world" in raw:
+        return "世界卡"
+    if "signature" in raw:
+        return "签名卡"
+    if "infinite" in raw:
+        return "无限卡"
+
+    return "未知"
+
 
 
 def normalize_country(raw: str) -> str:
