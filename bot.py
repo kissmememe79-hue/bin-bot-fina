@@ -39,6 +39,47 @@ CARD_LEVEL_MAP = {
     "infinite": "无限卡",
 }
 
+COUNTRY_MAP = {
+    "Indonesia": "印度尼西亚",
+    "China": "中国",
+    "Hong Kong": "中国香港",
+    "Taiwan": "中国台湾",
+    "Japan": "日本",
+    "South Korea": "韩国",
+    "United States of America": "美国",
+    "United States": "美国",
+    "Canada": "加拿大",
+    "United Kingdom": "英国",
+    "Germany": "德国",
+    "France": "法国",
+    "Italy": "意大利",
+    "Spain": "西班牙",
+    "Netherlands": "荷兰",
+    "Belgium": "比利时",
+    "Switzerland": "瑞士",
+    "Austria": "奥地利",
+    "Denmark": "丹麦",
+    "Sweden": "瑞典",
+    "Norway": "挪威",
+    "Finland": "芬兰",
+    "Poland": "波兰",
+    "Czech Republic": "捷克",
+    "Russia": "俄罗斯",
+    "Turkey": "土耳其",
+    "United Arab Emirates": "阿联酋",
+    "Saudi Arabia": "沙特阿拉伯",
+    "India": "印度",
+    "Thailand": "泰国",
+    "Vietnam": "越南",
+    "Malaysia": "马来西亚",
+    "Singapore": "新加坡",
+    "Philippines": "菲律宾",
+    "Australia": "澳大利亚",
+    "Brazil": "巴西",
+    "Mexico": "墨西哥",
+    "South Africa": "南非",
+}
+
 # ========= 查询 BIN =========
 def query_bin(bin_code: str) -> str:
     try:
@@ -57,7 +98,7 @@ def query_bin(bin_code: str) -> str:
         level = CARD_LEVEL_MAP.get(level_raw, level_raw or "未知")
 
         bank = data.get("bank", {}).get("name", "未知")
-        
+
         country_raw = data.get("country", {}).get("name", "")
         country = COUNTRY_MAP.get(country_raw, country_raw or "未知")
         emoji = data.get("country", {}).get("emoji", "")
